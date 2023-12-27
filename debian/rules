@@ -1,0 +1,18 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+
+PLUGINDIR=$(shell pkg-config ofono --variable=plugindir)
+
+override_dh_auto_build:
+	make PLUGINDIR=$(PLUGINDIR) KEEP_SYMBOLS=1 release
+
+override_dh_auto_install:
+	make DESTDIR=$(CURDIR)/debian/tmp PLUGINDIR=$(PLUGINDIR) install
+	find $(CURDIR)/debian
+
+override_dh_install:
+	dh_install --remaining-packages 
+
+%:
+	dh $@

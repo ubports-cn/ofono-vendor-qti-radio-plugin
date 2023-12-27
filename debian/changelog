@@ -1,0 +1,5 @@
+ofono-vendor-qti-radio-plugin (0.0.1) xenial; urgency=medium
+
+  * Add initial packaging for Ubuntu Touch.
+
+ -- kuailexs <952415538@qq.com>  Sat, 18 Nov 2023 17:24:53 +0800
