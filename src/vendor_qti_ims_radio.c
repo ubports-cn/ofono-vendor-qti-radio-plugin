@@ -27,3 +27,5 @@ vendor_qti_ims_radio_handle_incoming_ims_sms
  *==========================================================================*/
  vendor_qti_ims_radio_new(){
  }
+
+ vendor_qti_ims_radio_create()
