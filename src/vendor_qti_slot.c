@@ -37,6 +37,10 @@ qti_slot_get_interface(
     BinderExtSlot* slot,
     GType iface)
 {
+    VendorQtiSlot *self = THIS(slot);
+    if (iface == BINDER_EXT_TYPE_IMS) {
+        return self->ims;
+    }
     return BINDER_EXT_SLOT_CLASS(PARENT_CLASS)->
         get_interface(slot, iface);
 }
@@ -46,7 +50,7 @@ void
 qti_slot_shutdown(
     BinderExtSlot* slot)
 {
-    VendorQtiSlot* self = QTI_SLOT(slot);
+    VendorQtiSlot* self = THIS(slot);
 
     if (self->shutdown) {
         (*self->shutdown)++;
@@ -59,18 +63,18 @@ qti_slot_shutdown(
  *==========================================================================*/
  BinderExtSlot* vendor_qti_slot_new(RadioInstance* radio, GHashTable* params)
 {
-    VendorQtiSlot* slot = g_object_new(QTI_TYPE_SLOT, NULL);
-
+    VendorQtiSlot* self = g_object_new(QTI_TYPE_SLOT, NULL);
+    BinderExtSlot* slot = &self->parent;
     char* ims_radio_num = g_strdup_printf("imsradio%d", radio->slot_index);
     //
     VendorQtiImsRadio* ims_radio = vendor_qti_ims_radio_new(radio->enabled,ims_radio_num,2);
-    slot->ims_radio = ims_radio;
+    self->ims_radio = ims_radio;
     if(ims_radio != NULL){
         VendorQtiImsStateObject* ims_state = vendor_qti_ims_state_new(ims_radio);
-        slot->ims_state = ims_state;
-        slot->ims = vendor_qti_ims_new(ims_radio,ims_state);
-        slot->ims_call = vendor_qti_ims_call_new(slot->ims_radio,slot->ims_state);
-        slot->ims_sms = vendor_qti_ims_sms_new(slot->ims_radio,slot->ims_state);
+        self->ims_state = ims_state;
+        self->ims = vendor_qti_ims_new(ims_radio,ims_state);
+        self->ims_call = vendor_qti_ims_call_new(self->ims_radio,self->ims_state);
+        self->ims_sms = vendor_qti_ims_sms_new(self->ims_radio,self->ims_state);
     }
     g_free(ims_radio_num);
     return slot;
