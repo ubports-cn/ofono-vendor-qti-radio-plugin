@@ -12,9 +12,9 @@ typedef BinderExtSlotClass VendorQtiSlotClass;
 typedef struct qti_slot {
     BinderExtSlot parent;
     int* shutdown;
-    VendorQtiIms* ims;// 4
-    VendorQtiImsSms* ims_sms;// 5
-    VendorQtiImsCall* ims_call;// 6
+    BinderExtIms* ims;// 4
+    BinderExtSms* ims_sms;// 5
+    BinderExtCall* ims_call;// 6
     VendorQtiImsRadio* ims_radio;// 7
     VendorQtiImsStateObject* ims_state; // 8
 } VendorQtiSlot;
@@ -41,6 +41,12 @@ qti_slot_get_interface(
     if (iface == BINDER_EXT_TYPE_IMS) {
         return self->ims;
     }
+    if (iface == BINDER_EXT_TYPE_SMS) {
+        return self->ims_sms;
+    }
+    if (iface == BINDER_EXT_TYPE_CALL) {
+        return self->ims_call;
+    }
     return BINDER_EXT_SLOT_CLASS(PARENT_CLASS)->
         get_interface(slot, iface);
 }
@@ -65,9 +71,9 @@ qti_slot_shutdown(
 {
     VendorQtiSlot* self = g_object_new(QTI_TYPE_SLOT, NULL);
     BinderExtSlot* slot = &self->parent;
-    char* ims_radio_num = g_strdup_printf("imsradio%d", radio->slot_index);
+    char* ims_radio_name = g_strdup_printf("imsradio%d", radio->slot_index);
     //
-    VendorQtiImsRadio* ims_radio = vendor_qti_ims_radio_new(radio->enabled,ims_radio_num,2);
+    VendorQtiImsRadio* ims_radio = vendor_qti_ims_radio_new(radio->dev, ims_radio_name);
     self->ims_radio = ims_radio;
     if(ims_radio != NULL){
         VendorQtiImsStateObject* ims_state = vendor_qti_ims_state_new(ims_radio);
