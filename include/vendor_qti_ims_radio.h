@@ -1,9 +1,10 @@
-#ifndef VENDOR_QTI_SLOT_H
-#define VENDOR_QTI_SLOT_H
+#ifndef VENDOR_QTI_IMS_RADIO_H
+#define VENDOR_QTI_IMS_RADIO_H
 
 #include <binder_ext_slot.h>
 
 #include <radio_types.h>
+#include "vendor_qti_types.h"
 
 #define IMS_RADIO_IFACE_PREFIX     "vendor.qti.hardware.radio.ims@"
 #define IMS_RADIO_IFACE            "IImsRadio"
@@ -23,6 +24,6 @@
 #define IMS_RADIO_INDICATION_1_2   IMS_RADIO_IFACE_1_2(IMS_RADIO_INDICATION_IFACE)
 
 
-VendorQtiImsRadio* vendor_qti_ims_radio_new(RadioInstance* radio, GHashTable* params);
+VendorQtiImsRadio* vendor_qti_ims_radio_new(const char* dev, const char* name);
 
 #endif

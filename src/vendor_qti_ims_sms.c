@@ -1,15 +1,16 @@
-
-
+#include <ofono/log.h>
 #include "binder_ext_sms_impl.h"
+
+#include "vendor_qti_types.h"
 
 
 typedef GObjectClass VendorQtiImsSmsClass;
-typedef struct qti_ims_sms {
+struct qti_ims_sms {
     GObject parent;
     int cancelled;
     VendorQtiImsRadio* ims_radio;
     VendorQtiImsStateObject* ims_state;
-} VendorQtiImsSms;
+};
 
 static void qti_ims_sms_iface_init(BinderExtSmsInterface* iface);
 G_DEFINE_TYPE_WITH_CODE(VendorQtiImsSms, qti_ims_sms, G_TYPE_OBJECT,

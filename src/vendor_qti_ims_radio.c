@@ -1,14 +1,23 @@
+#include <ofono/log.h>
+#include <gbinder.h>
 
 #include "vendor_qti_ims_radio.h"
 
-typedef VendorQtiImsRadioClass VendorQtiExtClass;
-typedef struct qti_ims_radio {
-    BinderExtPlugin parent;
+typedef struct radio_interface_desc {
+    RADIO_INTERFACE version;
+    const char* radio_iface;
+    const char* const* ind_ifaces;
+    const char* const* resp_ifaces;
+} RadioInterfaceDesc;
+
+typedef GObjectClass VendorQtiImsRadioClass;
+struct qti_ims_radio {
+    GObject parent;
     int num;
 
-} VendorQtiImsRadio;
+};
 
-
+/**
 vendor_qti_ims_radio_registration_info
 vendor_qti_ims_radio_get_reg_state_response
 vendor_qti_ims_radio_send_ims_sms_response
@@ -20,15 +29,13 @@ vendor_qti_ims_radio_handle_supp_service_notification
 vendor_qti_ims_radio_handle_call_state_changed
 vendor_qti_ims_radio_handle_sms_status_report
 vendor_qti_ims_radio_handle_incoming_ims_sms
-
+*/
 #define DEFAULT_INTERFACE 2
 
 /*==========================================================================*
  * API
  *==========================================================================*/
-VendorQtiImsRadio* vendor_qti_ims_radio_new(
-    const char* dev,
-    const char* name)
+VendorQtiImsRadio* vendor_qti_ims_radio_new(const char* dev, const char* name)
 {
     return vendor_qti_ims_radio_new_with_version(dev, name, DEFAULT_INTERFACE);
 }
@@ -41,14 +48,13 @@ VendorQtiImsRadio* radio_instance_new_with_version(
     GBinderServiceManager* sm = gbinder_servicemanager_new(dev);
     if (sm) {
         guint i;
-
+/**
         for (i = 0; i < G_N_ELEMENTS(radio_interfaces) && !self; i++) {
             const RadioInterfaceDesc* desc = radio_interfaces + i;
 
             if (desc->version <= max_version) {
                 char* fqname = g_strconcat(desc->radio_iface, "/", name, NULL);
-                GBinderRemoteObject* obj = /* autoreleased */
-                    gbinder_servicemanager_get_service_sync(sm, fqname, NULL);
+                GBinderRemoteObject* obj = gbinder_servicemanager_get_service_sync(sm, fqname, NULL);
 
                 if (obj) {
                     GINFO("Connected to %s", fqname);
@@ -58,11 +64,12 @@ VendorQtiImsRadio* radio_instance_new_with_version(
                 g_free(fqname);
             }
         }
+*/
         gbinder_servicemanager_unref(sm);
     }
     return self;
 }
-
+/**
 VendorQtiImsRadio* vendor_qti_ims_radio_create(
     GBinderServiceManager* sm,
     GBinderRemoteObject* remote,
@@ -76,3 +83,4 @@ VendorQtiImsRadio* vendor_qti_ims_radio_create(
     int status;
 
 }
+*/

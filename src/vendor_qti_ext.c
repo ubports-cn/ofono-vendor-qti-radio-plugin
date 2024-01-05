@@ -24,7 +24,7 @@ G_DEFINE_TYPE(VendorQtiExt, qti_plugin, BINDER_EXT_TYPE_PLUGIN)
 #define THIS_TYPE qti_plugin_get_type()
 #define THIS(obj) G_TYPE_CHECK_INSTANCE_CAST(obj, THIS_TYPE, VendorQtiExt)
 
-static const char qti_plugin_name[] = "qti";
+const char qti_plugin_name[] = "qti";
 
 /*==========================================================================*
  * BinderExtPluginClass

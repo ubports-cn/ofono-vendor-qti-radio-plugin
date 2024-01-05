@@ -1,8 +1,8 @@
-
-
+#include <ofono/log.h>
+#include "vendor_qti_types.h"
 
 typedef BinderExtCallClass VendorQtiImsCallClass;
-typedef struct QtiImsCall {
+struct qti_ims_call {
     BinderExtCall parent;
     void * v_1;
     void * v_2;
@@ -10,7 +10,7 @@ typedef struct QtiImsCall {
     void * v_4;
     void * v_5;
     void * v_6;
-} VendorQtiImsCall;
+};
 
 G_DEFINE_TYPE(VendorQtiImsCall, qti_ims_call, BINDER_EXT_TYPE_CALL)
 

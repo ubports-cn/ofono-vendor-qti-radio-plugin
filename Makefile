@@ -33,10 +33,19 @@ STATIC_LIB = $(NAME).a
 #
 
 SRC = \
-  sample_ext.c \
-  sample_ims.c \
   vendor_qti_plugin.c \
-  sample_slot.c
+  vendor_qti_ext.c \
+  vendor_qti_slot.c \
+  vendor_qti_ims_radio.c \
+
+#
+#  vendor_qti_ims.c \
+#  vendor_qti_ims_call.c \
+#  vendor_qti_ims_conf.c \
+#  vendor_qti_ims_radio.c \
+#  vendor_qti_ims_sms.c \
+#  vendor_qti_ims_state.c \
+#  vendor_qti_util.c
 
 #
 # Directories

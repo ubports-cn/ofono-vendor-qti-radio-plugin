@@ -1,7 +1,19 @@
 
-#include "vendor_qti_slot.h"
+#include <ofono/log.h>
+
+#include "radio_instance.h"
+
 #include "binder_ext_ims.h"
+#include "binder_ext_sms.h"
+#include "binder_ext_call.h"
+
 #include "binder_ext_slot_impl.h"
+
+#include "vendor_qti_types.h"
+
+#include "vendor_qti_slot.h"
+#include "vendor_qti_ims_radio.h"
+#include "vendor_qti_ims_state.h"
 
 
 /*==========================================================================*
@@ -9,15 +21,14 @@
  *==========================================================================*/
 
 typedef BinderExtSlotClass VendorQtiSlotClass;
-typedef struct qti_slot {
+struct qti_slot {
     BinderExtSlot parent;
-    int* shutdown;
     BinderExtIms* ims;// 4
     BinderExtSms* ims_sms;// 5
     BinderExtCall* ims_call;// 6
     VendorQtiImsRadio* ims_radio;// 7
     VendorQtiImsStateObject* ims_state; // 8
-} VendorQtiSlot;
+};
 
 G_DEFINE_TYPE(VendorQtiSlot, qti_slot, BINDER_EXT_TYPE_SLOT)
 
@@ -58,9 +69,6 @@ qti_slot_shutdown(
 {
     VendorQtiSlot* self = THIS(slot);
 
-    if (self->shutdown) {
-        (*self->shutdown)++;
-    }
     BINDER_EXT_SLOT_CLASS(PARENT_CLASS)->shutdown(slot);
 }
 
@@ -69,12 +77,13 @@ qti_slot_shutdown(
  *==========================================================================*/
  BinderExtSlot* vendor_qti_slot_new(RadioInstance* radio, GHashTable* params)
 {
-    VendorQtiSlot* self = g_object_new(QTI_TYPE_SLOT, NULL);
+    VendorQtiSlot* self = g_object_new(THIS_TYPE, NULL);
     BinderExtSlot* slot = &self->parent;
     char* ims_radio_name = g_strdup_printf("imsradio%d", radio->slot_index);
     //
     VendorQtiImsRadio* ims_radio = vendor_qti_ims_radio_new(radio->dev, ims_radio_name);
     self->ims_radio = ims_radio;
+    /*
     if(ims_radio != NULL){
         VendorQtiImsStateObject* ims_state = vendor_qti_ims_state_new(ims_radio);
         self->ims_state = ims_state;
@@ -82,7 +91,8 @@ qti_slot_shutdown(
         self->ims_call = vendor_qti_ims_call_new(self->ims_radio,self->ims_state);
         self->ims_sms = vendor_qti_ims_sms_new(self->ims_radio,self->ims_state);
     }
-    g_free(ims_radio_num);
+    */
+    g_free(ims_radio_name);
     return slot;
 }
 
