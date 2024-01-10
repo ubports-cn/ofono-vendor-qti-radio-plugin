@@ -18,7 +18,7 @@ typedef struct qti_plugin {
 
 } VendorQtiExt;
 
-GType qti_plugin_get_type();
+//GType qti_plugin_get_type();
 G_DEFINE_TYPE(VendorQtiExt, qti_plugin, BINDER_EXT_TYPE_PLUGIN)
 
 #define THIS_TYPE qti_plugin_get_type()

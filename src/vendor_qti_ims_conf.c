@@ -1,5 +1,6 @@
 #include <ofono/log.h>
 #include "vendor_qti_types.h"
+#include <glib-object.h>
 
 struct qti_ims_conf{
     GObject parent;
