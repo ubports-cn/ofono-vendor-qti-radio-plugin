@@ -44,7 +44,7 @@ typedef struct ims_radio_interface_desc {
         ims_radio_indication_ifaces + IMS_RADIO_INTERFACE_INDEX(IMS_RADIO_INTERFACE_##v), \
         ims_radio_response_ifaces + IMS_RADIO_INTERFACE_INDEX(IMS_RADIO_INTERFACE_##v)
 
-static const RadioInterfaceDesc ims_radio_interfaces[] = {
+static const ImsRadioInterfaceDesc ims_radio_interfaces[] = {
    { IMS_RADIO_INTERFACE_DESC(1_2) },
    { IMS_RADIO_INTERFACE_DESC(1_1) },
    { IMS_RADIO_INTERFACE_DESC(1_0) }
@@ -88,7 +88,7 @@ qti_ims_radio_finalize(
 }
 
 static void destroy_value(gpointer hash_data) {
-    printf("destroy value:%s\n",hash_data);
+    //printf("destroy value:%s\n",hash_data);
     //因为我这里的值是数组形式不是指针所以不用释放内存。我就直接清空吧
 /*    free(hash_data);
     hash_data = NULL;*/
@@ -118,25 +118,80 @@ vendor_qti_ims_radio_get_reg_state_response
 vendor_qti_ims_radio_send_ims_sms_response
 vendor_qti_ims_radio_sip_result_response
 
-vendor_qti_ims_radio_response
-vendor_qti_ims_radio_indication
 vendor_qti_ims_radio_handle_supp_service_notification
 vendor_qti_ims_radio_handle_call_state_changed
 vendor_qti_ims_radio_handle_sms_status_report
 vendor_qti_ims_radio_handle_incoming_ims_sms
 */
-
+static
+GBinderLocalReply*
+vendor_qti_ims_radio_response(
+    GBinderLocalObject* obj,
+    GBinderRemoteRequest* req,
+    guint code,
+    guint flags,
+    int* status,
+    void* user_data)
+{
+    VendorQtiImsRadio* self = THIS(user_data);
+    const char* iface = gbinder_remote_request_interface(req);
+    return NULL;
+}
+static
+GBinderLocalReply*
+vendor_qti_ims_radio_indication(
+    GBinderLocalObject* obj,
+    GBinderRemoteRequest* req,
+    guint code,
+    guint flags,
+    int* status,
+    void* user_data)
+{
+    VendorQtiImsRadio* self = THIS(user_data);
+    const char* iface = gbinder_remote_request_interface(req);
+    return NULL;
+}
 /*==========================================================================*
  * API
  *==========================================================================*/
-VendorQtiImsRadio* vendor_qti_ims_radio_new(const char* dev, const char* name)
+VendorQtiImsRadio* vendor_qti_ims_radio_create(
+    GBinderServiceManager* sm,
+    GBinderRemoteObject* remote,
+    const char* dev,
+    const char* name,
+    const ImsRadioInterfaceDesc* desc)
 {
-    return vendor_qti_ims_radio_new_with_version(dev, name, DEFAULT_INTERFACE);
+    VendorQtiImsRadio* self = g_object_new(THIS_TYPE, NULL);
+    GBinderLocalRequest* req;
+    GBinderWriter writer;
+    int status;
+
+    self->name = g_strdup(name);
+    self->client = gbinder_client_new2(remote, ims_radio_iface_info, G_N_ELEMENTS(ims_radio_iface_info));
+
+    self->response = gbinder_servicemanager_new_local_object2(sm, desc->resp_ifaces, vendor_qti_ims_radio_response, self);
+
+    self->indication = gbinder_servicemanager_new_local_object2(sm, desc->ind_ifaces, vendor_qti_ims_radio_indication, self);
+
+    /* IImsRadio::setCallback */
+    req = gbinder_client_new_request2(self->client,
+        IMS_RADIO_REQ_SET_CALLBACK);
+    gbinder_local_request_init_writer(req, &writer);
+    gbinder_writer_append_local_object(&writer, self->response);
+    gbinder_writer_append_local_object(&writer, self->indication);
+    // log
+    gbinder_remote_reply_unref(gbinder_client_transact_sync_reply(self->client,
+        IMS_RADIO_REQ_SET_CALLBACK, req, &status));
+    GINFO("setCallback %s status %d", self->name, status);
+    gbinder_local_request_unref(req);
+
+    return self;
 }
+
 VendorQtiImsRadio* radio_instance_new_with_version(
     const char* dev,
     const char* name,
-    RADIO_INTERFACE version) /* Since 1.2.1 */
+    RADIO_INTERFACE max_version) /* Since 1.2.1 */
 {
     VendorQtiImsRadio* self = NULL;
     GBinderServiceManager* sm = gbinder_servicemanager_new(dev);
@@ -161,14 +216,7 @@ VendorQtiImsRadio* radio_instance_new_with_version(
     return self;
 }
 
-VendorQtiImsRadio* vendor_qti_ims_radio_create(
-    GBinderServiceManager* sm,
-    GBinderRemoteObject* remote,
-    const char* dev,
-    const char* name,
-    const ImsRadioInterfaceDesc* desc)
+VendorQtiImsRadio* vendor_qti_ims_radio_new(const char* dev, const char* name)
 {
-    VendorQtiImsRadio* self = g_object_new(THIS_TYPE, NULL);
-    int status;
-
+    return vendor_qti_ims_radio_new_with_version(dev, name, DEFAULT_INTERFACE);
 }
